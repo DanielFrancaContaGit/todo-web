@@ -1,20 +1,43 @@
 <script setup>
   const value = ref('')
-  const selected = ref(true)
-  let id = 0
-  const todoList = ref([
-    {id: id++, value: 'maçam'}, 
-    {id: id++, value: 'banana'}
-  ])
-  const newTodo = ref('')
-  function addTodo() {
-    todoList.value.push({id: id++, value: value.value})
-    value.value = ''
+  const todoData = ref(null)
+
+  const serverUrl = 'http://127.0.0.1:8000/todo/'
+
+  async function fetchData() {
+    todoData.value = null
+
+    const { data } = await useFetch(serverUrl, {
+      lazy: true,
+      headers: { authorization: "Basic YWRtaW46YWRtaW4=" },
+    })
+
+    todoData.value = await data.value
   }
 
-  function removeTodo(todo) {
-    todoList.value = todoList.value.filter((t) => t !== todo)
+  async function submit() {
+    const response = await useFetch(serverUrl, {
+        headers: { authorization: "Basic YWRtaW46YWRtaW4=" },
+        method: 'POST',
+        body: { "content": value.value }
+    })
+    value.value = ''
+    fetchData()
+    return response
   }
+
+  async function deleteTodo(todoId) {
+    const response = await useFetch(serverUrl, {
+      headers: { authorization: "Basic YWRtaW46YWRtaW4=" },
+      method: 'DELETE',
+      body: { 'id': todoId }
+    })
+
+    fetchData()
+    return response
+  }
+
+  fetchData()
 </script>
 
 <template>
@@ -23,13 +46,13 @@
       <h2>Todo List</h2>
       <div  id="inputcase">
         <v-text-field v-model="value" label="escreva seu tudo aqui" variant="outlined" id='inp'/> 
-        <v-btn @click="addTodo" id="btn">Adicionar ao todo</v-btn>
+        <v-btn @click="submit" id="btn">Adicionar ao todo</v-btn>
       </div>
       <ul>
-        <li v-for="todo in todoList" :key="todo.id">
+        <li v-for="todo in todoData" :key="todo.id">
           <v-checkbox-btn />
-          <p>{{ todo.value }}</p>
-          <v-btn @click="removeTodo(todo)" icon="mdi-delete" size="x-small" />
+          <p>{{ todo.content }}</p>
+          <v-btn @click="deleteTodo(todo.id)" icon="mdi-delete" size="x-small" />
         </li>
       </ul>
     </div>
