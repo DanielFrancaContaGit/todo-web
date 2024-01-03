@@ -2,14 +2,17 @@
   const value = ref('')
   const todoData = ref(null)
 
-  const serverUrl = 'http://127.0.0.1:8000/todo/'
+  const config = useRuntimeConfig()
+
+  const serverUrl = config.public.SERVER_URL
+  const loginToken = config.public.LOGIN_TOKEN
 
   async function fetchData() {
     todoData.value = null
 
     const { data } = await useFetch(serverUrl, {
       lazy: true,
-      headers: { authorization: "Basic YWRtaW46YWRtaW4=" },
+      headers: { authorization: "Basic " + loginToken },
     })
 
     todoData.value = await data.value
@@ -17,7 +20,7 @@
 
   async function submit() {
     const response = await useFetch(serverUrl, {
-        headers: { authorization: "Basic YWRtaW46YWRtaW4=" },
+        headers: { authorization: "Basic "+ loginToken },
         method: 'POST',
         body: { "content": value.value }
     })
@@ -28,7 +31,7 @@
 
   async function deleteTodo(todoId) {
     const response = await useFetch(serverUrl, {
-      headers: { authorization: "Basic YWRtaW46YWRtaW4=" },
+      headers: { authorization: "Basic " + loginToken },
       method: 'DELETE',
       body: { 'id': todoId }
     })
@@ -43,7 +46,7 @@
 <template>
   <div id="flexcon">
     <div id="container">
-      <h2>Todo List</h2>
+      <h2>Todo List</h2> 
       <div  id="inputcase">
         <v-text-field v-model="value" label="escreva seu tudo aqui" variant="outlined" id='inp'/> 
         <v-btn @click="submit" id="btn">Adicionar ao todo</v-btn>

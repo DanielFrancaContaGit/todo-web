@@ -13,4 +13,11 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
 
+  runtimeConfig: {
+    public: {
+      SERVER_URL: process.env.SERVER_URL,
+      LOGIN_TOKEN: process.env.LOGIN_TOKEN,
+    }
+  }
+
 })
