@@ -8,9 +8,4 @@
 
 <template>
     <h1>todo fetch</h1>
-    <h2>{{ data }}</h2>
-    <h2>{{ error }}</h2>
-    <li v-for="todo in data">
-        <p>{{ todo.content }}</p>
-    </li>
 </template>

@@ -49,6 +49,7 @@
         <v-btn @click="submit" id="btn">Adicionar ao todo</v-btn>
       </div>
       <ul>
+        <p v-if="!todoData" id="load">Loading...</p>
         <li v-for="todo in todoData" :key="todo.id">
           <v-checkbox-btn />
           <p>{{ todo.content }}</p>
