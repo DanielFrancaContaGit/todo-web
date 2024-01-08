@@ -9,7 +9,6 @@
 
   
   async function fetchData() {
-    // todoData.value = null
     const { data } = await useFetch(serverUrl, {
       lazy: true,
       headers: { authorization: "Basic " + loginToken },
@@ -18,11 +17,6 @@
     todoData.value = await data.value 
   }
 
-  // useAsyncData(
-  //   'mountains',
-  //   async () => await fetchData()
-  // )
-
   async function submit() {
     await useFetch(serverUrl, {
         headers: { authorization: "Basic "+ loginToken },
@@ -30,8 +24,8 @@
         body: { "content": value.value }
     })
     value.value = ''
-    // await refreshNuxtData('mountains')
-    fetchData()
+    
+    fetchData() 
   }
 
   async function deleteTodo(todoId) {
@@ -41,17 +35,24 @@
       body: { 'id': todoId }
     })
 
-    await refreshNuxtData('mountains')
     fetchData()
+  }
+
+  async function trogleFinished(finished, id) {
+    await useFetch(serverUrl, {
+      headers: { authorization: "Basic "+ loginToken },
+      method: "PUT",
+      body: { "id": id, "finished": finished? "false" : "true" }
+    })
+
   }
 
   onNuxtReady(async () =>{
       fetchData()
   })
-  // fetchData()
 </script>
 
-<template>
+<template #fallback>
   <div id="flexcon">
     <div id="container">
       <h2>Todo List</h2> 
@@ -62,9 +63,9 @@
       <ul>
         <p v-show="!todoData" id="load">Loading...</p>
         <!-- <p id="load">{{ todoData }}</p> -->
-        <li v-for="{ content, id } in todoData" :key="id">
-          <v-checkbox-btn />
-          <p>{{ content }}</p>
+        <li v-for="{ content, id, finished } in todoData" :key="id">
+          <v-checkbox-btn :model-value="finished" @click="trogleFinished(finished, id)"/>
+          <p>{{ content}}</p>
           <v-btn @click="deleteTodo(id)" icon="mdi-delete" size="x-small" />
         </li>
       </ul>
