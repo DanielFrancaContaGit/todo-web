@@ -28,7 +28,7 @@
     fetchData() 
   }
 
-  async function deleteTodo(todoId) {
+ async function deleteTodo(todoId) {
     await useFetch(serverUrl, {
       headers: { authorization: "Basic " + loginToken },
       method: 'DELETE',
